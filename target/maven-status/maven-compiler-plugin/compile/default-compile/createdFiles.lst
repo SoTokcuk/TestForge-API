@@ -1,0 +1,10 @@
+org/example/repository/MyUserRepository.class
+org/example/email/exceptions/UserNotFoundException.class
+org/example/jwt/JwtAuthenticationFilter.class
+org/example/service/MyUserDetailService.class
+org/example/App.class
+org/example/service/UserService.class
+org/example/entity/MyUser.class
+org/example/jwt/JwtService.class
+org/example/config/SecurityConfiguration.class
+org/example/dto/LoginForm.class
