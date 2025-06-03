@@ -1,5 +1,6 @@
 package org.example.service;
 
+import org.example.dto.generationScope.UpdateGenerationScopeDto;
 import org.example.entity.GenerationScope;
 import org.example.entity.Project;
 import org.example.entity.TestCase;
@@ -7,11 +8,12 @@ import org.example.entity.component.AIClient;
 import org.example.repository.GenerationScopeRepository;
 import org.example.repository.ProjectRepository;
 import org.example.repository.TestCaseRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.time.Duration;
-import java.time.LocalDateTime;
+
+import java.util.List;
 
 @Service
 public class GenerationScopeService {
@@ -20,14 +22,22 @@ public class GenerationScopeService {
     private final TestCaseRepository testCaseRepository;
     private final ProjectRepository projectRepository;
     private final AIClient aiClient;
+    private final ModelMapper modelMapper;
 
     public GenerationScopeService(GenerationScopeRepository generationScopeRepository, ProjectRepository projectRepository,
                                   TestCaseRepository testCaseRepository,
-                                  AIClient aiClient) {
+                                  AIClient aiClient,
+                                  ModelMapper modelMapper) {
         this.generationScopeRepository = generationScopeRepository;
         this.projectRepository = projectRepository;
         this.testCaseRepository = testCaseRepository;
         this.aiClient = aiClient;
+        this.modelMapper = modelMapper;
+    }
+
+    @Transactional(readOnly = true)
+    public List<GenerationScope> getAllForProject(Long projectId) {
+        return generationScopeRepository.findByProjectId(projectId);
     }
 
     @Transactional
@@ -95,5 +105,15 @@ public class GenerationScopeService {
                 scope.getAiStrategy() != null ?
                         "\n\nAI Strategy: " + scope.getAiStrategy() : ""
         );
+    }
+
+    public GenerationScope updateGenerationScope(Long id, UpdateGenerationScopeDto dto) {
+        GenerationScope scope = generationScopeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Not found"));
+
+        modelMapper.getConfiguration().setSkipNullEnabled(true);
+        modelMapper.map(dto, scope);
+
+        return generationScopeRepository.save(scope);
     }
 }
