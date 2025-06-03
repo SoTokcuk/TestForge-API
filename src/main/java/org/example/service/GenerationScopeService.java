@@ -64,7 +64,7 @@ public class GenerationScopeService {
 
             // 2. Вызов AI API
             //LocalDateTime startTime = LocalDateTime.now();
-            String aiResponse = aiClient.generateTestCases(prompt);
+            String aiResponse = aiClient.generateTestCases(prompt, scope.getTestCasesCount());
             //Duration processingTime = Duration.between(startTime, LocalDateTime.now());
 
             // 3. Сохранение результата
