@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/test-cases")
@@ -29,17 +30,22 @@ public class TestCaseController {
         return ResponseEntity.ok(dto);
     }
 
-    @GetMapping("/by-scope/{generationScopeId}")
-    public ResponseEntity<List<TestCase>> getAllByGenerationScopeId(
-            @PathVariable Long generationScopeId) {
-        return ResponseEntity.ok(testCaseService.getAllByGenerationScopeId(generationScopeId));
+    @GetMapping("/by-scope/{scopeId}")
+    public ResponseEntity<List<TestCaseDto>> getAllTestCasesByScope(@PathVariable Long scopeId) {
+        List<TestCase> testCases = testCaseService.getAllByGenerationScopeId(scopeId);
+        List<TestCaseDto> dtos = testCases.stream()
+                .map(tc -> modelMapper.map(tc, TestCaseDto.class))
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(dtos);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<TestCase> updateTestCase(
+    public ResponseEntity<TestCaseDto> updateTestCase(
             @PathVariable Long id,
             @RequestBody UpdateTestCaseDto dto) {
-        return ResponseEntity.ok(testCaseService.updateTestCase(id, dto));
+        TestCase updatedTestCase = testCaseService.updateTestCase(id, dto);
+        TestCaseDto responseDto = modelMapper.map(updatedTestCase, TestCaseDto.class);
+        return ResponseEntity.ok(responseDto);
     }
 
     @DeleteMapping("/{id}")
