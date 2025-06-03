@@ -60,4 +60,10 @@ public class GenerationScopeController {
         GenerationScopeDto responseDto = modelMapper.map(updatedScope, GenerationScopeDto.class);
         return ResponseEntity.ok(responseDto);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteGenerationScope(@PathVariable Long id) {
+        generationScopeService.deleteGenerationScope(id);
+        return ResponseEntity.noContent().build();
+    }
 }

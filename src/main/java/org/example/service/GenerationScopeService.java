@@ -116,4 +116,15 @@ public class GenerationScopeService {
 
         return generationScopeRepository.save(scope);
     }
+
+    @Transactional
+    public void deleteGenerationScope(Long id) {
+        GenerationScope scope = generationScopeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("GenerationScope not found with id: " + id));
+
+        // Если есть связанные TestCases, сначала удаляем их
+        testCaseRepository.deleteAllByGenerationScopeId(id);
+
+        generationScopeRepository.delete(scope);
+    }
 }
