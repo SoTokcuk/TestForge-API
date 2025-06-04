@@ -5,6 +5,8 @@ import org.example.dto.testCase.UpdateTestCaseDto;
 import org.example.entity.TestCase;
 import org.example.service.TestCaseService;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -52,5 +54,36 @@ public class TestCaseController {
     public ResponseEntity<Void> deleteTestCase(@PathVariable Long id) {
         testCaseService.deleteTestCase(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping(value = "/by-scope/{generationScopeId}/export", produces = {
+            MediaType.APPLICATION_JSON_VALUE,
+            MediaType.APPLICATION_OCTET_STREAM_VALUE
+    })
+    public ResponseEntity<byte[]> exportTestCasesByScope(
+            @PathVariable Long generationScopeId,
+            @RequestParam(defaultValue = "json") String format) {
+
+        List<TestCase> testCases = testCaseService.getAllByGenerationScopeId(generationScopeId);
+
+        byte[] fileContent;
+        String filename;
+        MediaType contentType;
+
+        if ("csv".equalsIgnoreCase(format)) {
+            fileContent = testCaseService.exportToCsv(testCases);
+            filename = "test-cases-scope-" + generationScopeId + ".csv";
+            contentType = MediaType.parseMediaType("text/csv");
+        } else {
+            fileContent = testCaseService.exportToJson(testCases);
+            filename = "test-cases-scope-" + generationScopeId + ".json";
+            contentType = MediaType.APPLICATION_JSON;
+        }
+
+        return ResponseEntity.ok()
+                .contentType(contentType)
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=\"" + filename + "\"")
+                .body(fileContent);
     }
 }
