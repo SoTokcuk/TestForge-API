@@ -74,7 +74,7 @@ public class GenerationScopeService {
 
             // 2. Вызов AI API
             //LocalDateTime startTime = LocalDateTime.now();
-            String aiResponse = aiClient.generateTestCases(prompt, scope.getTestCasesCount());
+            String aiResponse = aiClient.generateTestCases(prompt, scope.getTestCasesCount(), scope.getAiStrategy());
             //Duration processingTime = Duration.between(startTime, LocalDateTime.now());
 
             // 3. Сохранение результата
@@ -97,13 +97,14 @@ public class GenerationScopeService {
 
     private String buildPrompt(GenerationScope scope) {
         return String.format(
-                "Generate %d test cases for: %s%s%s",
+                "Generate %d test cases for: %s%s",
                 scope.getTestCasesCount(),
                 scope.getRequirements(),
                 scope.getAnalyzeSourceCode() ?
-                        "\n\nAnalyze source code from: " + scope.getGitUrl() : "",
-                scope.getAiStrategy() != null ?
-                        "\n\nAI Strategy: " + scope.getAiStrategy() : ""
+                        "\n\nAnalyze source code from: " + scope.getGitUrl() : ""
+//                ,
+//                scope.getAiStrategy() != null ?
+//                        "\n\nAI Strategy: " + scope.getAiStrategy() : ""
         );
     }
 

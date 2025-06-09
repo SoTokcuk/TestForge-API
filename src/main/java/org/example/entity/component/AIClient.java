@@ -34,6 +34,10 @@ public class AIClient {
             --- SYSTEM PARAMETERS START ---
             number_of_test_cases_requested: {здесь_будет_запрошенное_количество_тестов}
             --- SYSTEM PARAMETERS END ---
+            
+            --- AI STRATEGY SETTING START ---
+            ai_strategy: {здесь_будет_ии_стратегия}
+            --- AI STRATEGY SETTING END ---
                         
             --- INSTRUCTIONS START ---
             Based *only* on the text provided in the USER INPUT section and the 'number_of_test_cases_requested' from SYSTEM PARAMETERS:
@@ -255,7 +259,7 @@ public class AIClient {
 //        }
 //    }
 
-    public String generateTestCases(String prompt, int number_of_test_cases_requested) {
+    public String generateTestCases(String prompt, int number_of_test_cases_requested, String aiStrategy) {
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
@@ -267,7 +271,8 @@ public class AIClient {
             // Вставляем пользовательский ввод и количество тест-кейсов в шаблон
             String filledPrompt = template
                     .replace("{здесь_будет_текст_введенный_пользователем}", prompt)
-                    .replace("{здесь_будет_запрошенное_количество_тестов}", String.valueOf(number_of_test_cases_requested));
+                    .replace("{здесь_будет_запрошенное_количество_тестов}", String.valueOf(number_of_test_cases_requested))
+                    .replace("{здесь_будет_ии_стратегия}", aiStrategy);
 
             Map<String, Object> requestMap = new HashMap<>();
             requestMap.put("model", "deepseek-ai/DeepSeek-V3");
